@@ -1,0 +1,21 @@
+
+interface PlatoEspecialService {
+
+    @GET("/platos-especiales")
+    suspend fun getAllPlatosEspeciales(): List<PlatoEspecial>
+
+    @GET("/platos-especiales/{id}")
+    suspend fun getPlatoEspecialById(@Path("id") id: Long): Response<PlatoEspecial>
+
+    @POST("/platos-especiales")
+    suspend fun createPlatoEspecial(@Body platoEspecial: PlatoEspecial): Response<PlatoEspecial>
+
+    @PUT("/platos-especiales/{id}")
+    suspend fun updatePlatoEspecial(
+        @Path("id") id: Long,
+        @Body platoEspecial: PlatoEspecial
+    ): Response<PlatoEspecial>
+
+    @DELETE("/platos-especiales/{id}")
+    suspend fun deletePlatoEspecial(@Path("id") id: Long): Response<Unit>
+}

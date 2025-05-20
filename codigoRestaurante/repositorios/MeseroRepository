@@ -1,0 +1,55 @@
+
+import retrofit2.Response
+
+class MeseroRepository(private val meseroService: MeseroService) {
+
+    // Obtener todos los meseros
+    suspend fun getAllMeseros(): List<Mesero> {
+        val response = meseroService.getAllMeseros()
+        if (response.isNotEmpty()) {
+            return response
+        } else {
+            // Manejo de error si no se reciben meseros
+            throw Exception("Error al obtener los meseros")
+        }
+    }
+
+    // Obtener mesero por ID
+    suspend fun getMeseroById(id: Long): Mesero? {
+        val response = meseroService.getMeseroById(id)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            // Manejo de error si la respuesta no es exitosa
+            null
+        }
+    }
+
+    // Crear un nuevo mesero
+    suspend fun createMesero(mesero: Mesero): Mesero? {
+        val response = meseroService.createMesero(mesero)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            // Manejo de error si la creación falla
+            null
+        }
+    }
+
+    // Actualizar un mesero existente
+    suspend fun updateMesero(id: Long, mesero: Mesero): Mesero? {
+        val response = meseroService.updateMesero(id, mesero)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            // Manejo de error si la actualización falla
+            null
+        }
+    }
+
+    // Eliminar un mesero
+    suspend fun deleteMesero(id: Long): Boolean {
+        val response = meseroService.deleteMesero(id)
+        return response.isSuccessful
+    }
+}

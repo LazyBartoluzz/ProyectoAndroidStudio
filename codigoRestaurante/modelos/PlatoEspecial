@@ -1,0 +1,7 @@
+data class PlatoEspecial(
+    val id: Long?,
+    val descripcion: String?,
+    val esExotico: Boolean?,
+    val precio: Double?,
+    val urlImagen: String?
+)

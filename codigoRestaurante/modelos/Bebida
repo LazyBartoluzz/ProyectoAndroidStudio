@@ -1,0 +1,9 @@
+data class Bebida(
+    val id: Long?,
+    val descripcion: String?,
+    val precio: Double?,
+    val stockActual: Int?,
+    val stockMaximo: Int?,
+    val stockMinimo: Int?,
+    val urlImagen: String?
+)

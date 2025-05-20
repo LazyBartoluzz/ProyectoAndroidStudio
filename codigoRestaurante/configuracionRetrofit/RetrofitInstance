@@ -1,0 +1,14 @@
+object RetrofitInstance {
+    private const val BASE_URL = "http://localhost:3000/"
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val bebidaService: BebidaService = retrofit.create(BebidaService::class.java)
+    val meseroService: MeseroService = retrofit.create(MeseroService::class.java)
+    val ordenService: OrdenService = retrofit.create(OrdenService::class.java)
+    val platoService: PlatoService = retrofit.create(PlatoService::class.java)
+    val platoEspecialService: PlatoEspecialService = retrofit.create(PlatoEspecialService::class.java)
+}

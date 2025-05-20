@@ -1,0 +1,50 @@
+import retrofit2.Response
+
+class PlatoEspecialRepository(private val platoEspecialService: PlatoEspecialService) {
+
+    // Obtener todos los platos especiales
+    suspend fun getAllPlatosEspeciales(): List<PlatoEspecial> {
+        val response = platoEspecialService.getAllPlatosEspeciales()
+        if (response.isNotEmpty()) {
+            return response
+        } else {
+            throw Exception("No se pudieron obtener los platos especiales")
+        }
+    }
+
+    // Obtener un plato especial por su ID
+    suspend fun getPlatoEspecialById(id: Long): PlatoEspecial? {
+        val response = platoEspecialService.getPlatoEspecialById(id)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Crear un nuevo plato especial
+    suspend fun createPlatoEspecial(platoEspecial: PlatoEspecial): PlatoEspecial? {
+        val response = platoEspecialService.createPlatoEspecial(platoEspecial)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Actualizar un plato especial existente
+    suspend fun updatePlatoEspecial(id: Long, platoEspecial: PlatoEspecial): PlatoEspecial? {
+        val response = platoEspecialService.updatePlatoEspecial(id, platoEspecial)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Eliminar un plato especial
+    suspend fun deletePlatoEspecial(id: Long): Boolean {
+        val response = platoEspecialService.deletePlatoEspecial(id)
+        return response.isSuccessful
+    }
+}

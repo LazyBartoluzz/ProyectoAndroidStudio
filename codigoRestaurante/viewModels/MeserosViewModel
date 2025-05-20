@@ -1,0 +1,109 @@
+class MeserosViewModel : ViewModel() {
+
+    // LiveData para manejar las respuestas
+    private val _meseros = MutableLiveData<List<Mesero>>()
+    val meseros: LiveData<List<Mesero>> get() = _meseros
+
+    private val _mesero = MutableLiveData<Mesero>()
+    val mesero: LiveData<Mesero> get() = _mesero
+
+    private val _loading = MutableLiveData<Boolean>(false)
+    val loading: LiveData<Boolean> get() = _loading
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
+
+    // Fetch all meseros
+    fun fetchMeseros() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.meseroService.getAllMeseros()
+                _meseros.postValue(response)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching meseros: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch a specific mesero by ID
+    fun fetchMeseroById(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.meseroService.getMeseroById(id)
+                if (response.isSuccessful) {
+                    _mesero.postValue(response.body())
+                } else {
+                    _errorMessage.postValue("Error fetching mesero by ID")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching mesero: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Create a new mesero
+    fun createMesero(mesero: Mesero) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.meseroService.createMesero(mesero)
+                if (response.isSuccessful) {
+                    _mesero.postValue(response.body())
+                    fetchMeseros() // Refresh the meseros list after creating a new mesero
+                } else {
+                    _errorMessage.postValue("Error creating mesero")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error creating mesero: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Update an existing mesero
+    fun updateMesero(id: Long, mesero: Mesero) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.meseroService.updateMesero(id, mesero)
+                if (response.isSuccessful) {
+                    _mesero.postValue(response.body())
+                    fetchMeseros() // Refresh the meseros list after updating the mesero
+                } else {
+                    _errorMessage.postValue("Error updating mesero")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error updating mesero: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Delete a mesero by ID
+    fun deleteMesero(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.meseroService.deleteMesero(id)
+                if (response.isSuccessful) {
+                    fetchMeseros() // Re-fetch the list after deletion
+                } else {
+                    _errorMessage.postValue("Error deleting mesero")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error deleting mesero: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+}
+

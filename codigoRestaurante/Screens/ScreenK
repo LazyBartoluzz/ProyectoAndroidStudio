@@ -1,0 +1,519 @@
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+@Composable
+fun RegistrarOrden(navController: NavController, pedidosView : PedidosViewModel,bebidaViewModel:BebidasViewModel,meserosView : MeserosViewModel,ordenesView : OrdenesViewModel,platoEspecialViewModel: PlatosEspecialesViewModel,platoViewModel :PlatosViewModel ) {
+
+    val naranjaClaro = Color(0xFFFFA726)
+    val azulCielo = Color(0xFF81D4FA)
+
+    var selectedImg1 by remember { mutableStateOf<String?>(null) }
+    var expanded1 by remember { mutableStateOf(false) }
+
+    var selectedImg2 by remember { mutableStateOf<String?>(null) }
+    var expanded2 by remember { mutableStateOf(false) }
+
+    var selectedImg3 by remember { mutableStateOf<String?>(null) }
+    var expanded3 by remember { mutableStateOf(false) }
+
+    var selectedPais by remember { mutableStateOf<String?>(null) }
+    var expandedPais by remember { mutableStateOf(false) }
+
+	var numeroMesa by remember { mutableStateOf(0) }
+	
+	var valor1 by remember { mutableStateOf(0) }
+    var valor2 by remember { mutableStateOf(0) }
+    var valor3 by remember { mutableStateOf(0) }
+
+// Obtener listas de cada tipo
+
+	//
+	val platos by platoViewModel.platos.observeAsState(emptyList())
+	val bebidas by bebidaViewModel.bebidas.observeAsState(emptyList())
+	val platosEspeciales by platoEspecialViewModel.platosEspeciales.observeAsState(emptyList())
+	val losMeseros by meserosView.meseros.observeAsState(emptyList())
+	
+	val stockActual: by bebidaViewModel.stockActual.observeAsState(0) //variable que al cambiar su valor cambia la UI
+	
+	val orden by ordenesView.orden.observeAsState()
+	
+	//
+
+	LaunchedEffect(true) {
+		platoViewModel.fetchPlatos()
+		bebidaViewModel.fetchBebidas()
+        platoEspecialViewModel.fetchPlatosEspeciales()
+        meserosView.fetchMeseros()
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = azulCielo
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Registrar Orden",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+
+            Text("# de ratas = 8", color = Color.White)
+
+    		// ----------- Desplegable 1 (PLATO) -------------
+    		Text("Desplegable 1 - Plato", color = Color.White)
+    		Box {
+        		OutlinedButton(
+            		onClick = { expanded1 = true },
+            		modifier = Modifier.fillMaxWidth()
+        		) {
+            		Text("Seleccionar imagen de plato")
+        		}
+		
+        		DropdownMenu(expanded = expanded1, onDismissRequest = { expanded1 = false }) {
+            		platos.forEach { plato ->
+                		DropdownMenuItem(
+                    		text = { Text("Plato") },
+                    		onClick = {
+                        		selectedImg1 = plato.urlImagen
+                        		//idPlato = plato.id
+                        		pedidosView.idConsumiblePlato = plato.id
+                        		
+                        		expanded1 = false
+                    		},
+                    		leadingIcon = {
+                        		AsyncImage(
+                            		model = plato.urlImagen,
+                            		contentDescription = null,
+                            		modifier = Modifier.size(32.dp),
+                            		contentScale = ContentScale.Crop
+                        		)
+                    		}
+                		)
+            		}
+        		}
+    		}
+    		selectedImg1?.let {
+        		AsyncImage(
+            		model = it,
+            		contentDescription = "Imagen Plato Seleccionado",
+            		modifier = Modifier.size(64.dp)
+        		)
+    		}
+		
+    		// ----------- Desplegable 2 (BEBIDA) -------------
+    		Text("Desplegable 2 - Bebida", color = Color.White)
+    		Box {
+        		OutlinedButton(
+            		onClick = { expanded2 = true },
+            		modifier = Modifier.fillMaxWidth()
+        		) {
+            		Text("Seleccionar imagen de bebida")
+        		}
+		
+        		DropdownMenu(expanded = expanded2, onDismissRequest = { expanded2 = false }) {
+            		bebidas.forEach { bebida ->
+                		DropdownMenuItem(
+                    		text = { Text("Bebida") },
+                    		onClick = {
+                        		selectedImg2 = bebida.urlImagen
+                        		//idBebida = bebida.id
+                        		
+                        		pedidosView.idConsumibleBebida = bebida.id
+                        		expanded2 = false
+                    		},
+                    		leadingIcon = {
+                        		AsyncImage(
+                            		model = bebida.urlImagen,
+                            		contentDescription = null,
+                            		modifier = Modifier.size(32.dp),
+                            		contentScale = ContentScale.Crop
+                        		)
+                    		}
+                		)
+            		}
+        		}
+    		}
+    		selectedImg2?.let {
+        		AsyncImage(
+            		model = it,
+            		contentDescription = "Imagen Bebida Seleccionada",
+            		modifier = Modifier.size(64.dp)
+        		)
+    		}
+		
+    		// ----------- Desplegable 3 (PLATO ESPECIAL) -------------
+    		Text("Desplegable 3 - Plato Especial", color = Color.White)
+    		Box {
+        		OutlinedButton(
+            		onClick = { expanded3 = true },
+            		modifier = Modifier.fillMaxWidth()
+        		) {
+            		Text("Seleccionar imagen de especial")
+        		}
+		
+        		DropdownMenu(expanded = expanded3, onDismissRequest = { expanded3 = false }) {
+            		platosEspeciales.forEach { especial ->
+                		DropdownMenuItem(
+                    		text = { Text("Especial") },
+                    		onClick = {
+                        		selectedImg3 = especial.urlImagen
+                        		//idPlatoEspecial = especial.id
+                        		
+                        		pedidosView.idConsumibleEspecial = especial.id
+                        		
+                        		expanded3 = false
+                    		},
+                    		leadingIcon = {
+                        		AsyncImage(
+                            		model = especial.urlImagen,
+                            		contentDescription = null,
+                            		modifier = Modifier.size(32.dp),
+                            		contentScale = ContentScale.Crop
+                        		)
+                    		}
+                		)
+            		}
+        		}
+    		}
+    		selectedImg3?.let {
+        		AsyncImage(
+            		model = it,
+            		contentDescription = "Imagen Especial Seleccionado",
+            		modifier = Modifier.size(64.dp)
+        		)
+    		}
+		
+            // Dropdown de países
+            Text("nombres Meseros", color = Color.White)
+            Box {
+                OutlinedButton(
+                    onClick = { expandedPais = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(selectedPais ?: "Seleccionar país")
+                }
+
+                DropdownMenu(expanded = expandedPais, onDismissRequest = { expandedPais = false }) {
+                    losMeseros.forEach { pais ->
+                        DropdownMenuItem(
+                            text = { Text(pais.nombre) },
+                            onClick = {
+                                selectedPais = pais
+                                expandedPais = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Mini formulario para ingresar los tres valores
+            TextField(
+                value = numeroMesa,
+                onValueChange = { numeroMesa = it },
+                label = { Text("# mesa") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            
+
+  TextField(
+                value = valor1,
+                onValueChange = { valor1 = it },
+                label = { Text("Valor 1") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            TextField(
+                value = valor2,
+                onValueChange = { valor2 = it },
+                label = { Text("Valor 2") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            TextField(
+                value = valor3,
+                onValueChange = { valor3 = it },
+                label = { Text("Valor 3") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+			val contextoParaToast = LocalContext.current.applicationContext
+
+			Button(onClick = {
+    
+    			//plato
+    			//bebida
+    			//especial
+    			
+    			bebidaViewModel.fetchStockActual( pedidosView.idConsumibleBebida )
+    			
+    			if( (stockActual - valor2) < 0 ){
+    			
+    				Toast.makeText( contextoParaToast, "No hay suficientes bebidas!", Toast.LENGTH_LONG ).show()
+    			} else {
+    			
+    				val idMesero : Long? = pedidosView.idMesero
+    				
+    				if((numeroMesa >= 1 && numeroMesa <= 50) && idMesero != null){
+    				
+    					val fechaActual = LocalDate.now()
+    					
+    					val cantidadPlato = valor1
+    					
+    					val cantidadBebida = valor2
+    					
+    					val cantidadEspecial = valor3
+    					
+    					val idEspecial : Long?=pedidosView.idConsumibleEspecial
+    					
+    					val idPlato : Long?=pedidosView.idConsumiblePlato
+    					
+    					val idBebida : Long?=pedidosView.idConsumibleBebida
+    
+    					val nuevaOrden = Orden( null,fechaActual ,numeroMesa,idEspecial,idPlato,idMesero,idBebida)
+    					
+    					val listaObservable=pedidosView.pedidos
+    										
+    					val registro : RegistroPedido = listaObservable.get( numeroMesa - 1 )
+    					if ( registro.fecha != "" ){
+    						
+    						registro.fecha = fechaActual	
+    					}
+    						val listaPlatos = registro.platos
+    						val listaBebidas = registro.bebidas
+    						val listaPlatosEspeciales = registro.platosEspeciales
+    						
+    						var bandPlatos: Boolean = false
+							var bandBebidas: Boolean = false
+							var bandPlatosEspeciales: Boolean = false
+    						
+    						if( idPlato != null  && cantidadPlato > 0  ){
+    							for (item in listaPlatos) {
+        							if (item.id == idPlato) {
+            							
+            							item.cantidad += cantidadPlato
+            							bandPlatos = true
+            							break
+        							}
+    							}
+    						}
+
+    						if( idBebida != null && cantidadBebida > 0 ){
+    							for (item in listaBebidas) {
+        							if (item.id == idBebida) {
+            							
+            							item.cantidad += cantidadBebida
+            							bandBebidas: = true
+            							break
+        							}
+    							}
+    						}
+
+    						if( idEspecial != null && cantidadEspecial > 0 ){
+    							for (item in listaPlatosEspeciales) {
+        							if (item.id == idEspecial) {
+            							
+            							item.cantidad += cantidadEspecial
+            							bandPlatosEspeciales = true
+            							break
+        							}
+    							}
+    						}
+    						
+	
+    						if( !bandPlatos && idPlato != null && cantidadPlato > 0 ){
+    							
+    							val datoPlato : Dato = Dato( idPlato,cantidadPlato )
+    							registro.platos.add(datoPlato)
+    						}
+    						if( !bandBebidas && idBebida != null && cantidadBebida > 0){
+    							
+    							val datoBebida : Dato = Dato( idBebida,cantidadBebida )
+    						
+    							registro.bebidas.add(datoBebida)
+    						
+    						}
+    						if( !bandPlatosEspeciales && idEspecial != null && cantidadEspecial > 0 ){
+    							
+    							val datoPlatoEspecial : Dato = Dato( idEspecial,cantidadEspecial )
+    							registro.platosEspeciales.add(datoPlatoEspecial)
+    						}
+    										
+    					pedidosView.idOrden = ordenesView.createOrden( nuevaOrden )
+    					
+    					Toast.makeText( contextoParaToast, "Orden marcada!", Toast.LENGTH_SHORT ).show()
+    					
+    					pedidosView.idConsumibleEspecial = null
+    					
+    					pedidosView.idConsumiblePlato = null
+    					
+    					pedidosView.idConsumibleBebida = null
+    		
+    					pedidosView.cantidadPlatos = valor1
+ 						pedidosView.cantidadBebidas = valor2
+    					pedidosView.cantidadEspeciales = valor3
+    					
+    					valor1 = 0
+    					valor2 = 0
+    					valor3 = 0
+    					
+    				}else{
+    					
+    					Toast.makeText( contextoParaToast, "No existen esas mesas! o No hay mesero asignado!", Toast.LENGTH_LONG ).show()
+    					
+    				}
+    				
+    			}
+    
+           
+            }) {
+                Text("Hacer orden")
+            }
+
+			Button(onClick = {
+    
+    			if( pedidosView.idOrden != null ){
+    				
+    				//me voy a ir...
+    				//retrocedo con los cambios a la estructura de datos
+    				
+    				//-----------
+    					pedidosView.cantidadPlatos = valor1
+ 						pedidosView.cantidadBebidas = valor2
+    					pedidosView.cantidadEspeciales = valor3
+    					
+    					ordenesView.fetchOrdenById( pedidosView.idOrden )
+    				
+    					val numeroMesa : Int? = orden.numeroMesa
+    				
+    					val cantidadPlato:Int? = pedidosView.cantidadPlatos
+    					
+    					val cantidadBebida :Int?= pedidosView.cantidadBebidas
+    					
+    					val cantidadEspecial :Int?= pedidosView.cantidadEspeciales
+    					
+    					val idEspecial : Long?=orden.idPlatoEspecial
+    					
+    					val idPlato : Long?=orden.idPlatos
+    					
+    					val idBebida : Long?=orden.idBebida
+    
+    					val listaObservable=pedidosView.pedidos
+    				
+    				//---
+    					val listaObservable=pedidosView.pedidos
+    										
+    					val registro : RegistroPedido = listaObservable.get( numeroMesa - 1 )
+    					
+    					val listaPlatos = registro.platos
+    					val listaBebidas = registro.bebidas
+    					val listaPlatosEspeciales = registro.platosEspeciales
+    					
+    					//oooooooooooooooooooooooooooooooo
+    						
+    						var i :Int
+    						
+    						i =0
+    						if( idPlato != null  && cantidadPlato > 0  ){
+    							for (item in listaPlatos) {
+        							if (item.id == idPlato) {
+            							
+            							item.cantidad -= cantidadPlato
+            						
+            							break
+        							}
+    								i++
+    							}
+    							if( listaPlatos.get(idPlato))).cantidad == 0 ){
+    								listaPlatos.remove(i)
+    							}
+    						}
+
+							i =0
+    						if( idBebida != null && cantidadBebida > 0 ){
+    							for (item in listaBebidas) {
+        							if (item.id == idBebida) {
+            							
+            							item.cantidad -= cantidadBebida
+            					
+            							break
+        							}
+        							i++
+    							}
+    							
+    							if( listaBebidas.get(idBebida)).cantidad == 0 ){
+    								listaBebidas.remove(i)
+    							}	
+    							
+    						}
+
+							i = 0
+    						if( idEspecial != null && cantidadEspecial > 0 ){
+    						
+    							for (item in listaPlatosEspeciales) {
+        							if (item.id == idEspecial) {
+            							
+            							item.cantidad -= cantidadEspecial
+            		
+            							break
+        							}
+    								i++
+    							}
+    							
+    							if( listaPlatosEspeciales.get(idEspecial).cantidad == 0 ){
+    								listaPlatosEspeciales.remove(i)
+    							}	
+    						}
+    					
+    					//oooooooooooooooooooooooooooooooo
+    				
+    				//--------------------
+    				
+    				navController.navigate("ScreenL")	
+    			}else{
+    				
+    				Toast.makeText( contextoParaToast, "No existe una orden para modificar!", Toast.LENGTH_LONG ).show()
+    					
+    			}
+                
+            }) {
+                Text("Modificar la orden")
+            }
+
+            Button(onClick = {
+    
+                val mesero = losMeseros.find { it.nombre.equals(selectedPais, ignoreCase = true) }
+                pedidosView.idMesero = mesero?.id
+            }) {
+                Text("Cambiar mesero")
+            }
+            
+            Button(
+                onClick = { navController.navigate("ScreenA") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ir al inicio", color = Color.White)
+            }
+        }
+    }
+}
+

@@ -1,0 +1,20 @@
+interface MeseroService {
+
+    @GET("/meseros")
+    suspend fun getAllMeseros(): List<Mesero>
+
+    @GET("/meseros/{id}")
+    suspend fun getMeseroById(@Path("id") id: Long): Response<Mesero>
+
+    @POST("/meseros")
+    suspend fun createMesero(@Body mesero: Mesero): Response<Mesero>
+
+    @PUT("/meseros/{id}")
+    suspend fun updateMesero(
+        @Path("id") id: Long,
+        @Body mesero: Mesero
+    ): Response<Mesero>
+
+    @DELETE("/meseros/{id}")
+    suspend fun deleteMesero(@Path("id") id: Long): Response<Unit>
+}

@@ -1,0 +1,84 @@
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+
+@Composable
+fun Principal(navController: NavController ) {
+
+
+    // Colores personalizados
+    val naranjaClaro = Color(0xFFFFA726) // naranja claro
+    val azulCielo = Color(0xFF81D4FA)    // azul cielo
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = azulCielo
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Menú Principal",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
+            )
+
+            Button(
+                onClick = { navController.navigate("screenA1") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Agregar Consumible", color = Color.White)
+            }
+
+            Button(
+                onClick = { navController.navigate("screenA2") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Modificar Consumible", color = Color.White)
+            }
+
+            Button(
+                onClick = { navController.navigate("ScreenH") }, //aca
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ver Ordenes", color = Color.White)
+            }
+
+            Button(
+                onClick = { navController.navigate("ScreenI") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Generar Factura", color = Color.White)
+            }
+
+            Button(
+                onClick = { navController.navigate("ScreenJ") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Mostrar Bebidas", color = Color.White)
+            }
+
+            Button(
+                onClick = { navController.navigate("ScreenK") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Registrar Orden", color = Color.White)
+            }
+        }
+    }
+}

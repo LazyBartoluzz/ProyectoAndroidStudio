@@ -1,0 +1,7 @@
+data class ItemFactura(
+    val tipo: String,
+    val nombre: String,
+    val cantidad: Int,
+    val precio: Double,
+    val monto: Double
+)

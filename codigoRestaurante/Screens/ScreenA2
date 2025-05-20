@@ -1,0 +1,234 @@
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.Alignment
+import androidx.navigation.NavHostController
+
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontFamily
+
+@Composable
+fun PasadizoModificar( navController: NavController, pedidosView : PedidosViewModel,platos :PlatosViewModel,bebidas:BebidasViewModel,especiales: PlatosEspecialesViewModel ) {
+    // Estados para los 3 campos numéricos
+    var number1 by remember { mutableStateOf("") }
+    var number2 by remember { mutableStateOf("") }
+    var number3 by remember { mutableStateOf("") }
+
+    var number4 by remember { mutableStateOf("") }
+    var number5 by remember { mutableStateOf("") }
+    var number6 by remember { mutableStateOf("") }
+
+    // Colores personalizados
+    val lightOrange = Color(0xFFFFE0B2) // naranja claro
+    val skyBlue = Color(0xFF87CEEB)     // azul cielo
+
+    // Fondo dividido con degradado (opcionalmente puedes usar solo uno de los colores)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.horizontalGradient(listOf(lightOrange, skyBlue))
+            )
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+        	Text(
+                text = "Eliminación de Consumibles",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
+            )
+        
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                // Columna de botones
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Button(onClick = { navController.navigate("ScreenE")
+                    	pedidosView.idConsumible = number1
+                     }) {
+                        Text("Cambiar plato")
+                    }
+                    Button(onClick = { navController.navigate("ScreenF")
+                    	pedidosView.idConsumible = number2
+                     }) {
+                        Text("Cambiar bebida")
+                    }
+                    Button(onClick = {navController.navigate("ScreenG")
+                    	pedidosView.idConsumible = number3
+                     }) {
+                        Text("Cambiar plato especial")
+                    }
+                }
+
+                // Columna de campos numéricos
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    NumberInputField(value = number1, onValueChange = { number1 = it }, label = "Id plato")
+                    NumberInputField(value = number2, onValueChange = { number2 = it }, label = "Id bebida")
+                    NumberInputField(value = number3, onValueChange = { number3 = it }, label = "Id plato especial")
+                }
+            }
+            
+            Button(
+                onClick = { navController.popBackStack() },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver", color = Color.White)
+            }
+        }
+    }
+    
+    //------------
+    
+        Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.horizontalGradient(listOf(lightOrange, skyBlue))
+            )
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                // Columna de botones
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                	val contextoParaToast = LocalContext.current.applicationContext
+                
+                    Button(onClick = { 
+                    	
+                    	if (number4.toLongOrNull() != null) {
+                    	
+                    		platos.deletePlato( number4.toLong() )
+    						
+							Toast.makeText( contextoParaToast, "Se ha borrado ese plato con ID number4!", Toast.LENGTH_SHORT ).show()
+						}else{
+							
+							Toast.makeText( contextoParaToast, "el tipo de dato del ID no es valido!", Toast.LENGTH_LONG ).show()
+						}
+						
+                    	
+                     }) {
+                        Text("Borrar plato")
+                    }
+                    Button(onClick = { 
+                    
+                    	if (number5.toLongOrNull() != null) {
+                    	
+                    		bebidas.deleteBebida( number5.toLong() )
+    						
+							Toast.makeText( contextoParaToast, "Se ha borrado esa bebida con ID number5!", Toast.LENGTH_SHORT ).show()
+						}else{
+							
+							Toast.makeText( contextoParaToast, "el tipo de dato del ID no es valido!", Toast.LENGTH_LONG ).show()
+						}
+                     }) {
+                        Text("Borrar bebida")
+                    }
+                    Button(onClick = { 
+                    	
+                    	if (number6.toLongOrNull() != null) {
+                    	
+                    		especiales.deletePlatoEspecial( number6.toLong() )
+    						
+							Toast.makeText( contextoParaToast, "Se ha borrado ese plato especial con ID number6!", Toast.LENGTH_SHORT ).show()
+						}else{
+							
+							Toast.makeText( contextoParaToast, "el tipo de dato del ID no es valido!", Toast.LENGTH_LONG ).show()
+						}
+                    	
+                     }) {
+                        Text("Borrar plato especial")
+                    }
+                }
+
+                // Columna de campos numéricos
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    NumberInputField(value = number4, onValueChange = { number4 = it }, label = "Id plato")
+                    NumberInputField(value = number5, onValueChange = { number5 = it }, label = "Id bebida")
+                    NumberInputField(value = number6, onValueChange = { number6 = it }, label = "Id plato especial")
+                }
+            }
+            
+            Button(
+                onClick = { navController.navigate("ScreenA") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver", color = Color.White)
+            }
+        }
+    }
+}
+
+@Composable
+fun NumberInputField(value: String, onValueChange: (String) -> Unit, label: String) {
+    TextField(
+        value = value,
+        onValueChange = { newValue ->
+            // Acepta solo enteros
+            if (newValue.all { it.isDigit() }) {
+                onValueChange(newValue)
+            } else if (newValue.isEmpty()) {
+                onValueChange("") // permite borrar
+            }
+        },
+        label = { Text(label) },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.width(150.dp)
+    )
+}

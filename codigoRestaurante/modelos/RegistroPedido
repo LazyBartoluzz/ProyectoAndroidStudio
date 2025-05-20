@@ -1,0 +1,6 @@
+data class RegistroPedido(
+    val fecha: String="",
+    val platos: MutableList<Dato> = mutableListOf(),
+    val bebidas: MutableList<Dato> = mutableListOf(),
+    val platosEspeciales: MutableList<Dato> = mutableListOf()
+)

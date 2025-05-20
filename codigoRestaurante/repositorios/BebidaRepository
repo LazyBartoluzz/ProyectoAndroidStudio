@@ -1,0 +1,89 @@
+
+import retrofit2.Response
+
+class BebidaRepository(private val bebidaService: BebidaService) {
+
+    // Obtener todas las bebidas
+    suspend fun getAllBebidas(): List<Bebida> {
+        val response = bebidaService.getAllBebidas()
+        if (response.isNotEmpty()) {
+            return response
+        } else {
+            // Manejo de error si no se reciben bebidas
+            throw Exception("Error al obtener las bebidas")
+        }
+    }
+
+    // Obtener bebida por ID
+    suspend fun getBebidaById(id: Long): Bebida? {
+        val response = bebidaService.getBebidaById(id)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            // Manejo de error si la respuesta no es exitosa
+            null
+        }
+    }
+
+    // Crear una nueva bebida
+    suspend fun createBebida(bebida: Bebida): Bebida? {
+        val response = bebidaService.createBebida(bebida)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            // Manejo de error si la creación falla
+            null
+        }
+    }
+
+    // Actualizar una bebida
+    suspend fun updateBebida(id: Long, bebida: Bebida): Bebida? {
+        val response = bebidaService.updateBebida(id, bebida)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            // Manejo de error si la actualización falla
+            null
+        }
+    }
+
+    // Eliminar una bebida
+    suspend fun deleteBebida(id: Long): Boolean {
+        val response = bebidaService.deleteBebida(id)
+        return response.isSuccessful
+    }
+
+    // Obtener stock mínimo de una bebida
+    suspend fun getStockMinimo(id: Long): Int? {
+        val response = bebidaService.getStockMinimo(id)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            // Manejo de error si la respuesta no es exitosa
+            null
+        }
+    }
+
+    // Obtener stock actual de una bebida
+    suspend fun getStockActual(id: Long): Int? {
+        val response = bebidaService.getStockActual(id)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            // Manejo de error si la respuesta no es exitosa
+            null
+        }
+    }
+
+    // Asignar stock máximo a todas las bebidas
+    suspend fun asignarStockMaximoATodas(): Boolean {
+        val response = bebidaService.asignarStockMaximoATodas()
+        return response.isSuccessful
+    }
+
+    // Actualizar stock actual de una bebida
+    suspend fun actualizarStockActual(id: Long, nuevoStock: Int): Boolean {
+        val response = bebidaService.actualizarStockActual(id, nuevoStock)
+        return response.isSuccessful
+    }
+}

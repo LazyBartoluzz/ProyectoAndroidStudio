@@ -1,0 +1,4 @@
+data class Dato(
+    val id: Int,
+    val cantidad: Int
+)

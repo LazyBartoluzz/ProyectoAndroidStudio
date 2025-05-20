@@ -1,0 +1,169 @@
+
+class OrdenesViewModel : ViewModel() {
+    // LiveData para manejar las respuestas
+    private val _ordenes = MutableLiveData<List<Orden>>()
+    val ordenes: LiveData<List<Orden>> get() = _ordenes
+
+    private val _orden = MutableLiveData<Orden>()
+    val orden: LiveData<Orden> get() = _orden
+
+    private val _loading = MutableLiveData<Boolean>(false)
+    val loading: LiveData<Boolean> get() = _loading
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
+
+    // Fetch all orders
+    fun fetchOrdenes() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.ordenService.getAllOrdenes()
+                _ordenes.postValue(response)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching orders: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch a specific order by ID
+    fun fetchOrdenById(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.ordenService.getOrdenById(id)
+                if (response.isSuccessful) {
+                    _orden.postValue(response.body())
+                } else {
+                    _errorMessage.postValue("Error fetching order by ID")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching order: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch orders by mesero ID
+    fun getOrdenesPorMesero Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.ordenService.getOrdenesByMesero(idMesero)
+                _ordenes.postValue(response)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching orders for mesero: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch orders by mesero ID and date
+    fun getOrdenesPorMeseroYFecha(idMesero: Long, fecha: LocalDate) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.ordenService.getOrdenesByMeseroAndFecha(idMesero, fecha)
+                _ordenes.postValue(response)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching orders for mesero and date: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+	
+	/*
+    // Create a new order
+    fun createOrden(orden: Orden) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.ordenService.createOrden(orden)
+                if (response.isSuccessful) {
+                    _orden.postValue(response.body())
+                    fetchOrdenes() // Refresh the orders list after creating a new order
+                } else {
+                    _errorMessage.postValue("Error creating order")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error creating order: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+    */
+    
+    fun createOrden(orden: Orden): Long? {
+    	var idOrden: Long? = null // Inicializamos como null para el caso de error
+	
+    	viewModelScope.launch {
+        	try {
+            	val response = RetrofitInstance.ordenService.createOrden(orden)
+            	if (response.isSuccessful) {
+                	val ordenCreada = response.body()
+                	if (ordenCreada != null) {
+                    	idOrden = ordenCreada.id // Asignamos el id de la orden creada
+                    	_orden.postValue(ordenCreada)
+                    	fetchOrdenes() // Refrescamos la lista de órdenes después de crear una nueva
+                	} else {
+                    	_errorMessage.postValue("Error: Response body is null")
+                	}
+            	} else {
+                	_errorMessage.postValue("Error creating order: ${response.code()} - ${response.message()}")
+            	}
+        	} catch (e: Exception) {
+            	_errorMessage.postValue("Error creating order: ${e.message}")
+        	} finally {
+            	_loading.value = false
+        	}
+    	}
+	
+    	return idOrden // Devolvemos el id o null si no fue posible crearlo
+	}
+
+
+    // Update an existing order
+    fun updateOrden(id: Long, orden: Orden) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.ordenService.updateOrden(id, orden)
+                if (response.isSuccessful) {
+                    _orden.postValue(response.body())
+                    fetchOrdenes() // Refresh the orders list after updating the order
+                } else {
+                    _errorMessage.postValue("Error updating order")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error updating order: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Delete an order by ID
+    fun deleteOrden(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.ordenService.deleteOrden(id)
+                if (response.isSuccessful) {
+                    fetchOrdenes() // Re-fetch the list after deletion
+                } else {
+                    _errorMessage.postValue("Error deleting order")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error deleting order: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+}

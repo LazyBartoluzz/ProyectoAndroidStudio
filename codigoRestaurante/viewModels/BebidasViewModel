@@ -1,0 +1,185 @@
+class BebidasViewModel : ViewModel() {
+    // LiveData para manejar las respuestas
+    private val _bebidas = MutableLiveData<List<Bebida>>()
+    val bebidas: LiveData<List<Bebida>> get() = _bebidas
+
+    private val _bebida = MutableLiveData<Bebida>()
+    val bebida: LiveData<Bebida> get() = _bebida
+
+    private val _stockMinimo = MutableLiveData<Int>()
+    val stockMinimo: LiveData<Int> get() = _stockMinimo
+
+    private val _stockActual = MutableLiveData<Int>()
+    val stockActual: LiveData<Int> get() = _stockActual
+
+    private val _loading = MutableLiveData<Boolean>(false)
+    val loading: LiveData<Boolean> get() = _loading
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
+
+	 private val _bebidaCreada = MutableLiveData<Response<Bebida>>()
+    val bebidaCreada: LiveData<Response<Bebida>> get() = _bebidaCreada
+
+    // Fetch all bebidas
+    fun fetchBebidas() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.bebidaService.getAllBebidas()
+                _bebidas.postValue(response)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching bebidas: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch a bebida by id
+    fun obtenerPorId(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.bebidaService.getBebidaById(id)
+                if (response.isSuccessful) {
+                    _bebida.postValue(response.body())
+                } else {
+                    _errorMessage.postValue("Error fetching bebida by ID")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching bebida: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+    
+    // Función para crear una bebida
+    fun crearBebida(bebida: Bebida) {
+        // Llamada a la API dentro de un bloque de corrutinas
+        viewModelScope.launch {
+            try {
+                val response = bebidaApi.createBebida(bebida)
+                _bebidaCreada.value = response
+            } catch (e: Exception) {
+                // En caso de error, manejar la excepción aquí
+                _bebidaCreada.value = Response.error(500, ResponseBody.create(null, "Error: ${e.message}"))
+            }
+        }
+    }
+
+    // Update a bebida
+    fun updateBebida(id: Long, bebida: Bebida) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.bebidaService.updateBebida(id, bebida)
+                if (response.isSuccessful) {
+                    _bebida.postValue(response.body())
+                } else {
+                    _errorMessage.postValue("Error updating bebida")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error updating bebida: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Delete a bebida
+    fun deleteBebida(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.bebidaService.deleteBebida(id)
+                if (response.isSuccessful) {
+                    fetchBebidas() // Re-fetch the list after deletion
+                } else {
+                    _errorMessage.postValue("Error deleting bebida")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error deleting bebida: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch stock minimo for a bebida
+    fun fetchStockMinimo(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.bebidaService.getStockMinimo(id)
+                if (response.isSuccessful) {
+                    _stockMinimo.postValue(response.body())
+                } else {
+                    _errorMessage.postValue("Error fetching stock minimo")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching stock minimo: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch stock actual for a bebida
+    fun fetchStockActual(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.bebidaService.getStockActual(id)
+                if (response.isSuccessful) {
+                    _stockActual.postValue(response.body())
+                } else {
+                    _errorMessage.postValue("Error fetching stock actual")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching stock actual: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Assign stock maximo to all bebidas
+    fun assignStockMaximoToAll() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.bebidaService.asignarStockMaximoATodas()
+                if (response.isSuccessful) {
+                    fetchBebidas() // Refresh list after assigning max stock
+                } else {
+                    _errorMessage.postValue("Error assigning max stock")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error assigning max stock: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Update stock actual for a bebida
+    fun updateStockActual(id: Long, nuevoStock: Int) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.bebidaService.actualizarStockActual(id, nuevoStock)
+                if (response.isSuccessful) {
+                    fetchBebidaById(id) // Refresh the bebida data after updating stock
+                } else {
+                    _errorMessage.postValue("Error updating stock actual")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error updating stock actual: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+}

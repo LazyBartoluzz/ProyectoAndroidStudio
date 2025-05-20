@@ -1,0 +1,141 @@
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+
+@Composable
+fun AgregarPlatoEspecial(navController: NavController,platosEspecialesView:PlatosEspecialesViewModel) {
+    // Colores personalizados
+    val naranjaClaro = Color(0xFFFFA726)
+    val azulCielo = Color(0xFF81D4FA)
+
+    // Estados de los campos
+    var precio by remember { mutableStateOf("") }
+    var descripcion by remember { mutableStateOf("") }
+	var urlImagen by remember { mutableStateOf("") } 
+	
+    // Estado del radio button (true o false)
+    var esDisponible by remember { mutableStateOf(true) }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = azulCielo
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Agregar Plato Especial",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
+            )
+
+            OutlinedTextField(
+                value = precio,
+                onValueChange = { precio = it },
+                label = { Text("Precio") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = descripcion,
+                onValueChange = { descripcion = it },
+                label = { Text("Descripción") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            OutlinedTextField(
+                value = urlImagen,
+                onValueChange = { urlImagen = it },
+                label = { Text("URL - imágen") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Radio buttons para disponibilidad (true/false)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text("Exótico:", color = Color.White)
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = esDisponible,
+                        onClick = { esDisponible = true }
+                    )
+                    Text("Sí")
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = !esDisponible,
+                        onClick = { esDisponible = false }
+                    )
+                    Text("No")
+                }
+            }
+
+			 val contextoParaToast = LocalContext.current.applicationContext
+            
+            // Botón para registrar
+            Button(
+                onClick = {
+                    // Aquí puedes usar el valor de esDisponible (true/false)
+                    // Ej: viewModel.registrarProducto(...)
+                	
+                	if( validarDatos(descripcion, urlImagen,precio ) ){
+                	
+                		platosEspecialesView.createPlatoEspecial( PlatoEspecial( null, descripcion,esDisponible, precio,urlImagen) )
+                		Toast.makeText( contextoParaToast, "Se ha creado un nuevo plato especial ${descripcion}!", Toast.LENGTH_SHORT ).show()
+                		
+                	}else{
+                    	
+                    	Toast.makeText( contextoParaToast, "Tenga cuidado con los tipos de datos!", Toast.LENGTH_LONG ).show()    		
+                    }		                	
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Registrar", color = Color.White)
+            }
+            
+            Button(
+                onClick = { navController.popBackStack() },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver", color = Color.White)
+            }
+            
+              //va al main
+             Button(
+                onClick = { navController.navigate("ScreenA") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ir al inicio", color = Color.White)
+            }
+        }
+    }
+}
+
+fun validar(cadena1: String, cadena2: String, numero: String): Boolean {
+    return if (cadena1.isNotEmpty() && cadena2.isNotEmpty()) {
+        try {
+            val numeroDouble = numero.toDouble()  // Intentamos convertir el string a Double
+            true  // Si la conversión tiene éxito, devolvemos true
+        } catch (e: NumberFormatException) {
+            false  // Si la conversión falla (excepción), devolvemos false
+        }
+    } else {
+        false  // Si alguna de las cadenas está vacía, devolvemos false
+    }
+}

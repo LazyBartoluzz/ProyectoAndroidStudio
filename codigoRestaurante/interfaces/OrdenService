@@ -1,0 +1,30 @@
+
+interface OrdenService {
+
+    @GET("/ordenes")
+    suspend fun getAllOrdenes(): List<Orden>
+
+    @GET("/ordenes/{id}")
+    suspend fun getOrdenById(@Path("id") id: Long): Response<Orden>
+
+    @POST("/ordenes")
+    suspend fun createOrden(@Body orden: Orden): Response<Orden>
+
+    @PUT("/ordenes/{id}")
+    suspend fun updateOrden(
+        @Path("id") id: Long,
+        @Body orden: Orden
+    ): Response<Orden>
+
+    @DELETE("/ordenes/{id}")
+    suspend fun deleteOrden(@Path("id") id: Long): Response<Unit>
+
+    @GET("/ordenes/mesero/{idMesero}")
+    suspend fun getOrdenesPorMesero(@Path("idMesero") idMesero: Long): List<Orden>
+
+    @GET("/ordenes/mesero/{idMesero}/fecha")
+    suspend fun getOrdenesPorMeseroYFecha(
+        @Path("idMesero") idMesero: Long,
+        @Query("fecha") fecha: String // Puedes usar LocalDate y convertirlo antes de enviarlo
+    ): List<Orden>
+}

@@ -1,0 +1,183 @@
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+
+@Composable
+fun GenerarFactura(
+    navController: NavController,
+    pedidosView: PedidosViewModel,
+    bebidaViewModel: BebidasViewModel,
+    meserosView: MeserosViewModel,
+    ordenesView: OrdenesViewModel,
+    platoEspecialViewModel: PlatosEspecialesViewModel,
+    platoViewModel: PlatosViewModel
+) {
+    val naranjaClaro = Color(0xFFFFA726)
+    val azulCielo = Color(0xFF81D4FA)
+
+    var mesaInput by remember { mutableStateOf("") }
+    var pedidosMesa by remember { mutableStateOf<RegistroPedido?>(null) }
+    val pedidos by pedidosView.pedidos
+    val itemsFactura = remember { mutableStateListOf<ItemFactura>() }
+    var totalMonto by remember { mutableStateOf(0.0) }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = azulCielo
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Generar Factura",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            OutlinedTextField(
+                value = mesaInput,
+                onValueChange = { mesaInput = it },
+                label = { Text("Ingrese número de mesa (1 - 50)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    val index = mesaInput.toIntOrNull()?.minus(1)
+                    if (index != null && index in 0..<50 && index < pedidos.size) {
+                        pedidosMesa = pedidos[index]
+
+                        // Limpiar datos previos
+                        itemsFactura.clear()
+                        totalMonto = 0.0
+
+                        // Cargar y construir los datos de la tabla
+                        pedidosMesa?.let { registro ->
+                            registro.platos.forEach { dato ->
+                                platoViewModel.obtenerPorId(dato.id)
+                                
+                                val plato = platoViewModel.plato.value
+                                val descripcion = plato?.descripcion ?: "Plato ${dato.id}"
+                                val precio = plato?.precio ?: 0.0
+                                val monto = dato.cantidad * precio
+                                itemsFactura.add(ItemFactura("Plato", descripcion, dato.cantidad, precio, monto))
+                                totalMonto += monto
+                            }
+
+                            registro.bebidas.forEach { dato ->
+                                bebidaViewModel.obtenerPorId(dato.id)
+                                val bebida = bebidaViewModel.bebida.value
+                                val descripcion = bebida?.descripcion ?: "Bebida ${dato.id}"
+                                val precio = bebida?.precio ?: 0.0
+                                val monto = dato.cantidad * precio
+                                itemsFactura.add(ItemFactura("Bebida", descripcion, dato.cantidad, precio, monto))
+                                totalMonto += monto
+                            }
+
+                            registro.platosEspeciales.forEach { dato ->
+                                platoEspecialViewModel.obtenerPorId(dato.id)
+                                val especial = platoEspecialViewModel.platoEspecial.value
+                                val descripcion = especial?.descripcion ?: "Especial ${dato.id}"
+                                val precio = especial?.precio ?: 0.0
+                                val monto = dato.cantidad * precio
+                                itemsFactura.add(ItemFactura("Especial", descripcion, dato.cantidad, precio, monto))
+                                totalMonto += monto
+                            }
+                        }
+
+						val registro= pedidos.get(index)
+                    	registro.platos.clear()
+                    	registro.bebidas.clear()
+                    	registro.platosEspeciales.clear()
+                    	
+                    } else {
+                        pedidosMesa = null
+                        itemsFactura.clear()
+                        totalMonto = 0.0
+                    }
+                },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text("Generar")
+            }
+            
+            Button(
+                onClick = { navController.popBackStack() },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver", color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (pedidosMesa != null && itemsFactura.isNotEmpty()) {
+                // Encabezado
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(naranjaClaro)
+                        .padding(8.dp)
+                ) {
+                    listOf("Tipo", "Descripción", "Cantidad", "Precio", "Monto").forEach {
+                        Text(it, Modifier.weight(1f), color = Color.White, fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(itemsFactura) { item ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White)
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                        ) {
+                            Text(item.tipo, Modifier.weight(1f))
+                            Text(item.nombre, Modifier.weight(1f))
+                            Text("${item.cantidad}", Modifier.weight(1f))
+                            Text("$${String.format("%.2f", item.precio)}", Modifier.weight(1f))
+                            Text("$${String.format("%.2f", item.monto)}", Modifier.weight(1f))
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 🧾 Mostrar total
+                Text(
+                    text = "Total a pagar: $${String.format("%.2f", totalMonto)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.End)
+                )
+
+            } else if (pedidosMesa == null && mesaInput.isNotEmpty()) {
+                Text(
+                    "No hay datos para la mesa ingresada",
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+        }
+    }
+}

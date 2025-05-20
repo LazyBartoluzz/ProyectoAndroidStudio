@@ -1,0 +1,147 @@
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+
+@Composable
+fun ModificarOrden(navController: NavController, pedidosView : PedidosViewModel,ordenesView : OrdenesViewModel) {
+    // Colores personalizados
+    val naranjaClaro = Color(0xFFFFA726)
+    val azulCielo = Color(0xFF81D4FA)
+
+    // Estados para los TextFields
+	
+	val orden by ordenesView.orden.observeAsState()
+	
+	ordenesView.fetchOrdenById(pedidosView.idOrden )
+	
+    var fecha by remember { mutableStateOf<Int?>( orden.fecha ) }
+    var numeroMesa by remember { mutableStateOf<Int?>( orden.numeroMesa ) }
+    var idPlatoEspecial by remember { mutableStateOf<Long?>( orden.idPlatoEspecial ) } 
+    var idPlato by remember { mutableStateOf<Long?>( orden.idPlatos ) } 
+    var idMesero by remember { mutableStateOf<Long?>( orden.idMesero ) } 
+ 	var idBebida by remember { mutableStateOf<Long?>( orden.idBebida ) } 
+ 	
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = azulCielo
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Agregar Plato",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
+            )
+
+            // Campos de texto
+            OutlinedTextField(
+                value = fecha,
+                onValueChange = { fecha = it },
+                label = { Text("Fecha (yyyy-MM-dd)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = numeroMesa,
+                onValueChange = { numeroMesa = it },
+                label = { Text("# mesa") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            OutlinedTextField(
+                value = idPlatoEspecial,
+                onValueChange = { idPlatoEspecial = it },
+                label = { Text("ID Plato Especial") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            OutlinedTextField(
+                value = idPlato,
+                onValueChange = { idPlato = it },
+                label = { Text("ID Plato") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            OutlinedTextField(
+                value = idBebida,
+                onValueChange = { idBebida = it },
+                label = { Text("ID Bebida") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            OutlinedTextField(
+                value = idMesero
+                onValueChange = { idMesero = it },
+                label = { Text("ID Mesero") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+        	val contextoParaToast = LocalContext.current.applicationContext
+
+            Button(
+                onClick = {
+                    // Aquí puedes manejar la lógica 
+                    
+                    //la fecha esta bien
+                    
+                    if( esFechaValida( fecha ) ){
+                   
+                    	val ordenConCambios = Orden( null,fecha ,numeroMesa,idPlatoEspecial,idPlato,idMesero,idBebida)
+    						
+                		ordenesView.updateOrden( pedidosView.idOrden, ordenConCambios ) 	
+                		
+                		Toast.makeText( contextoParaToast, "Se ha realizado el cambio correctamente!", Toast.LENGTH_SHORT ).show()
+                		
+                		pedidosView.idOrden = null
+                	}else{
+                	
+                		Toast.makeText( contextoParaToast, "La fecha no tiene un formato adecuado!", Toast.LENGTH_LONG ).show()
+    				}
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Guardar los cambios", color = Color.White)
+            }
+            
+            //va al main
+             Button(
+                onClick = { navController.popBackStack() },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver", color = Color.White)
+            }
+            
+              Button(
+                onClick = { navController.navigate("ScreenA") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ir al inicio", color = Color.White)
+            }
+        }
+    }
+}
+
+fun esFechaValida(fecha: String): Boolean {
+    val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    return try {
+        LocalDate.parse(fecha, formato)
+        true
+    } catch (e: DateTimeParseException) {
+        false
+    }
+}

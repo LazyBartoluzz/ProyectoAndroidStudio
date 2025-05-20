@@ -1,0 +1,51 @@
+
+import retrofit2.Response
+
+class PlatoRepository(private val platoService: PlatoService) {
+
+    // Obtener todos los platos
+    suspend fun getAllPlatos(): List<Plato> {
+        val response = platoService.getAllPlatos()
+        if (response.isNotEmpty()) {
+            return response
+        } else {
+            throw Exception("No se pudieron obtener los platos")
+        }
+    }
+
+    // Obtener un plato por su ID
+    suspend fun getPlatoById(id: Long): Plato? {
+        val response = platoService.getPlatoById(id)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Crear un nuevo plato
+    suspend fun createPlato(plato: Plato): Plato? {
+        val response = platoService.createPlato(plato)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Actualizar un plato existente
+    suspend fun updatePlato(id: Long, plato: Plato): Plato? {
+        val response = platoService.updatePlato(id, plato)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Eliminar un plato
+    suspend fun deletePlato(id: Long): Boolean {
+        val response = platoService.deletePlato(id)
+        return response.isSuccessful
+    }
+}

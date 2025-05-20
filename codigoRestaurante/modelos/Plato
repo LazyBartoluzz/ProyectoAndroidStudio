@@ -1,0 +1,6 @@
+data class Plato(
+    val id: Long?,
+    val descripcion: String?,
+    val precio: Double?,
+    val urlImagen: String?
+)

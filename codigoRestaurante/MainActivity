@@ -1,0 +1,35 @@
+package com.example.mycomposeapp
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.mycomposeapp.ui.theme.MyComposeAppTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        
+        //creo las listas y la estructura de datos
+        
+        pedidosViewModel = ViewModelProvider(this)[PedidosViewModel::class.java]
+        
+        bebidasViewModel = ViewModelProvider(this).get(BebidasViewModel::class.java)
+        meserosViewModel = ViewModelProvider(this).get(MeserosViewModel::class.java)
+        ordenesViewModel = ViewModelProvider(this).get(OrdenesViewModel::class.java)
+        platosEspecialesViewModel = ViewModelProvider(this).get(PlatosEspecialesViewModel::class.java)
+        platosViewModel = ViewModelProvider(this).get(PlatosViewModel::class.java)
+        
+        setContent {
+        
+        	Main( pedidosViewModel, bebidasViewModel,meserosViewModel,ordenesViewModel,platosEspecialesViewModel,platosViewModel)
+        }	
+    }
+}

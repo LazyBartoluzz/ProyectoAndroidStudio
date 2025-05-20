@@ -1,0 +1,9 @@
+data class Orden(
+    val id: Long?,
+    val fecha: String?,  // Puedes usar LocalDate si prefieres trabajar con fechas
+    val numeroMesa: Int?,
+    val idPlatoEspecial: Long?,
+    val idPlatos: Long?,
+    val idMesero: Long?,
+    val idBebida: Long?
+)

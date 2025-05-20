@@ -1,0 +1,109 @@
+
+class PlatosEspecialesViewModel : ViewModel() {
+
+    // LiveData para manejar las respuestas
+    private val _platosEspeciales = MutableLiveData<List<PlatoEspecial>>()
+    val platosEspeciales: LiveData<List<PlatoEspecial>> get() = _platosEspeciales
+
+    private val _platoEspecial = MutableLiveData<PlatoEspecial>()
+    val platoEspecial: LiveData<PlatoEspecial> get() = _platoEspecial
+
+    private val _loading = MutableLiveData<Boolean>(false)
+    val loading: LiveData<Boolean> get() = _loading
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
+
+    // Fetch all platos especiales
+    fun fetchPlatosEspeciales() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoEspecialService.getAllPlatosEspeciales()
+                _platosEspeciales.postValue(response)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching platos especiales: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch a specific plato especial by ID
+    fun obtenerPorId(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoEspecialService.getPlatoEspecialById(id)
+                if (response.isSuccessful) {
+                    _platoEspecial.postValue(response.body())
+                } else {
+                    _errorMessage.postValue("Error fetching plato especial by ID")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching plato especial: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Create a new plato especial
+    fun createPlatoEspecial(platoEspecial: PlatoEspecial) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoEspecialService.createPlatoEspecial(platoEspecial)
+                if (response.isSuccessful) {
+                    _platoEspecial.postValue(response.body())
+                    fetchPlatosEspeciales() // Refresh the platos especiales list after creating a new plato
+                } else {
+                    _errorMessage.postValue("Error creating plato especial")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error creating plato especial: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Update an existing plato especial
+    fun updatePlatoEspecial(id: Long, platoEspecial: PlatoEspecial) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoEspecialService.updatePlatoEspecial(id, platoEspecial)
+                if (response.isSuccessful) {
+                    _platoEspecial.postValue(response.body())
+                    fetchPlatosEspeciales() // Refresh the platos especiales list after updating the plato
+                } else {
+                    _errorMessage.postValue("Error updating plato especial")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error updating plato especial: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Delete a plato especial by ID
+    fun deletePlatoEspecial(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoEspecialService.deletePlatoEspecial(id)
+                if (response.isSuccessful) {
+                    fetchPlatosEspeciales() // Re-fetch the list after deletion
+                } else {
+                    _errorMessage.postValue("Error deleting plato especial")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error deleting plato especial: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+}

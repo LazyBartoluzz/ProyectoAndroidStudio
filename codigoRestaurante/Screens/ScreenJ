@@ -1,0 +1,129 @@
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
+import androidx.navigation.NavController
+
+@Composable
+fun VerBebidas(navController: NavController, bebidaViewModel : BebidasViewModel) {
+
+    // Observamos el estado de las bebidas y los errores
+    val bebidas by bebidaViewModel.bebidas.observeAsState(emptyList())
+    val error by bebidaViewModel.errorMessage.observeAsState()
+
+    // Estado para manejar la ventana secundaria
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Llamamos a la función que obtiene las bebidas cuando la pantalla se carga
+    LaunchedEffect(true) {
+        bebidaViewModel.fetchBebidas()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Título de la pantalla
+        Text(text = "Lista de Bebidas", style = MaterialTheme.typography.h5)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Mostrar las bebidas en forma de tabla
+        LazyColumn {
+            items(bebidas) { bebida ->
+                BebidaRow(bebida)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón para reponer las bebidas
+        Button(
+            onClick = {
+                // Lógica para reponer las bebidas y actualizar el stock
+                reponerBebidas(bebidaViewModel)
+                showDialog = true // Mostrar ventana secundaria
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(text = "Reponer Bebidas")
+        }
+
+		Button(
+                onClick = { navController.popBackStack() },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+        ) {
+                Text("Volver", color = Color.White)
+        }
+
+        // Mostrar el error si ocurre alguno
+        error?.let {
+            Text(text = "Error: $it", color = MaterialTheme.colors.error)
+        }
+
+        // Diálogo que aparece cuando se reponen las bebidas
+        if (showDialog) {
+            ReponerBebidasDialog(onDismiss = { showDialog = false })
+        }
+    }
+}
+
+@Composable
+fun BebidaRow(bebida: Bebida) {
+    // Usamos una fila (Row) para mostrar las propiedades de cada bebida
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        // Imagen de la bebida
+        val painter = rememberImagePainter(bebida.urlImagen)
+        Image(painter = painter, contentDescription = "Imagen de ${bebida.descripcion}", modifier = Modifier.size(50.dp))
+
+        // Descripción de la bebida
+        Column(
+            modifier = Modifier.weight(1f).padding(start = 16.dp)
+        ) {
+            Text(text = bebida.descripcion ?: "Sin descripción", style = MaterialTheme.typography.body1)
+            Text(text = "Precio: ${bebida.precio ?: "No disponible"}", style = MaterialTheme.typography.body2)
+            Text(text = "Stock actual: ${bebida.stockActual ?: "No disponible"}", style = MaterialTheme.typography.body2)
+            Text(text = "Stock máximo: ${bebida.stockMaximo ?: "No disponible"}", style = MaterialTheme.typography.body2)
+            Text(text = "Stock mínimo: ${bebida.stockMinimo ?: "No disponible"}", style = MaterialTheme.typography.body2)
+        }
+    }
+}
+
+@Composable
+fun ReponerBebidasDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Reponer Bebidas") },
+        text = { Text("Las bebidas han sido actualizadas correctamente.") },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Aceptar")
+            }
+        }
+    )
+}
+
+fun reponerBebidas(bebidaViewModel: BebidaViewModel) {
+    // Lógica para actualizar el stock de las bebidas
+    // En este caso, reponemos las bebidas simulando que se actualiza el stock
+    
+   bebidaViewModel. assignStockMaximoToAll()
+}

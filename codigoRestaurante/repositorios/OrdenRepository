@@ -1,0 +1,71 @@
+
+import retrofit2.Response
+
+class OrdenRepository(private val ordenService: OrdenService) {
+
+    // Obtener todas las órdenes
+    suspend fun getAllOrdenes(): List<Orden> {
+        val response = ordenService.getAllOrdenes()
+        if (response.isNotEmpty()) {
+            return response
+        } else {
+            throw Exception("No se pudieron obtener las órdenes")
+        }
+    }
+
+    // Obtener una orden por su ID
+    suspend fun getOrdenById(id: Long): Orden? {
+        val response = ordenService.getOrdenById(id)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Crear una nueva orden
+    suspend fun createOrden(orden: Orden): Orden? {
+        val response = ordenService.createOrden(orden)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Actualizar una orden existente
+    suspend fun updateOrden(id: Long, orden: Orden): Orden? {
+        val response = ordenService.updateOrden(id, orden)
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
+    }
+
+    // Eliminar una orden
+    suspend fun deleteOrden(id: Long): Boolean {
+        val response = ordenService.deleteOrden(id)
+        return response.isSuccessful
+    }
+
+    // Obtener las órdenes de un mesero
+    suspend fun getOrdenesPorMesero(idMesero: Long): List<Orden> {
+        val response = ordenService.getOrdenesPorMesero(idMesero)
+        if (response.isNotEmpty()) {
+            return response
+        } else {
+            throw Exception("No se pudieron obtener las órdenes del mesero")
+        }
+    }
+
+    // Obtener las órdenes de un mesero por fecha
+    suspend fun getOrdenesPorMeseroYFecha(idMesero: Long, fecha: String): List<Orden> {
+        val response = ordenService.getOrdenesPorMeseroYFecha(idMesero, fecha)
+        if (response.isNotEmpty()) {
+            return response
+        } else {
+            throw Exception("No se encontraron órdenes para la fecha especificada")
+        }
+    }
+}

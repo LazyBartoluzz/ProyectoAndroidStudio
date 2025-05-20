@@ -1,0 +1,148 @@
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+
+@Composable
+fun ModificarBebida(navController: NavController, pedidosView : PedidosViewModel,bebidasViewModel : PlatosViewModel) {
+    // Colores personalizados
+    val naranjaClaro = Color(0xFFFFA726)
+    val azulCielo = Color(0xFF81D4FA)
+
+	val bebida by bebidasViewModel.bebida.observeAsState()
+	
+	bebidasViewModel.obtenerPorId(pedidosView.idConsumible )
+
+    // Estados para los TextFields
+    var stockActual by remember { mutableStateOf( bebida.stockActual ) }
+    var stockMaximo by remember { mutableStateOf(bebida.stockMaximo) }
+    var stockMinimo by remember { mutableStateOf(bebida.stockMinimo) }
+    var descripcion by remember { mutableStateOf(bebida.descripcion) }
+    var precio by remember { mutableStateOf(bebida.precio) }
+	var urlImagen by remember { mutableStateOf(bebida.urlImagen) } 
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = azulCielo
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Modificar Bebida",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
+            )
+
+            // Campos de texto
+            OutlinedTextField(
+                value = stockActual
+                onValueChange = { stockActual = it },
+                label = { Text("stock actual") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = stockMaximo,
+                onValueChange = { stockMaximo = it },
+                label = { Text("stock máximo") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = stockMinimo,
+                onValueChange = { stockMinimo = it },
+                label = { Text("stock mínimo") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = descripcion
+                onValueChange = { descripcion = it },
+                label = { Text("Descripción") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = precio,
+                onValueChange = { precio = it },
+                label = { Text("Precio") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+			    OutlinedTextField(
+                value = urlImagen,
+                onValueChange = { urlImagen = it },
+                label = { Text("URL - imágen") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            val contextoParaToast = LocalContext.current.applicationContext
+
+            // Botón Agregar
+            Button(
+                onClick = {
+                    // Aquí puedes manejar la lógica de guardar
+                    // Ej: viewModel.agregarBebida(...)
+                    
+                    if( validarDatos(stockActual, stockMaximo,stockMinimo,precio,descripcion,urlImagen ) ){
+                	
+                		bebidasViewModel.updateBebida( pedidosView.idConsumible ,Bebida( null, descripcion,precio, stockActual, stockMaximo,stockMinimo,urlImagen) )
+                		Toast.makeText( contextoParaToast, "Se ha actualizado la bebida!", Toast.LENGTH_SHORT ).show()
+                		
+                	}else{
+                    	
+                    	Toast.makeText( contextoParaToast, "Tenga cuidado con los tipos de datos!", Toast.LENGTH_LONG ).show()
+                		
+                    }	
+                    
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Agregar", color = Color.White)
+            }
+            
+             Button(
+                onClick = { navController.popBackStack() },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver", color = Color.White)
+            }
+            
+              //va al main
+             Button(
+                onClick = { navController.navigate("ScreenA") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ir al inicio", color = Color.White)
+            }
+            
+        }
+    }
+}
+
+fun validarDatos(cadena1: String, cadena2: String, cadena3: String, cadenaDouble: String, cadenaNoVacia1: String, cadenaNoVacia2: String): Boolean {
+    return if (cadena1.toIntOrNull() != null &&  // Verifica si cadena1 es un entero
+        cadena2.toIntOrNull() != null &&  // Verifica si cadena2 es un entero
+        cadena3.toIntOrNull() != null &&  // Verifica si cadena3 es un entero
+        cadenaDouble.toDoubleOrNull() != null &&  // Verifica si cadenaDouble es un Double
+        cadenaNoVacia1.isNotEmpty() &&  // Verifica si cadenaNoVacia1 tiene algún dato
+        cadenaNoVacia2.isNotEmpty()) {  // Verifica si cadenaNoVacia2 tiene algún dato
+        true  // Si todas las condiciones son verdaderas
+    } else {
+        false  // Si alguna de las condiciones falla
+    }
+}

@@ -1,0 +1,110 @@
+
+
+class PlatosViewModel : ViewModel() {
+
+    // LiveData para manejar las respuestas
+    private val _platos = MutableLiveData<List<Plato>>()
+    val platos: LiveData<List<Plato>> get() = _platos
+
+    private val _plato = MutableLiveData<Plato>()
+    val plato: LiveData<Plato> get() = _plato
+
+    private val _loading = MutableLiveData<Boolean>(false)
+    val loading: LiveData<Boolean> get() = _loading
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
+
+    // Fetch all platos
+    fun fetchPlatos() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoService.getAllPlatos()
+                _platos.postValue(response)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching platos: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Fetch a specific plato by ID
+    fun obtenerPorId(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoService.getPlatoById(id)
+                if (response.isSuccessful) {
+                    _plato.postValue(response.body())
+                } else {
+                    _errorMessage.postValue("Error fetching plato by ID")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching plato: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Create a new plato
+    fun createPlato(plato: Plato) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoService.createPlato(plato)
+                if (response.isSuccessful) {
+                    _plato.postValue(response.body())
+                    fetchPlatos() // Refresh the platos list after creating a new plato
+                } else {
+                    _errorMessage.postValue("Error creating plato")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error creating plato: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Update an existing plato
+    fun updatePlato(id: Long, plato: Plato) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoService.updatePlato(id, plato)
+                if (response.isSuccessful) {
+                    _plato.postValue(response.body())
+                    fetchPlatos() // Refresh the platos list after updating the plato
+                } else {
+                    _errorMessage.postValue("Error updating plato")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error updating plato: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    // Delete a plato by ID
+    fun deletePlato(id: Long) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = RetrofitInstance.platoService.deletePlato(id)
+                if (response.isSuccessful) {
+                    fetchPlatos() // Re-fetch the list after deletion
+                } else {
+                    _errorMessage.postValue("Error deleting plato")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error deleting plato: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+}

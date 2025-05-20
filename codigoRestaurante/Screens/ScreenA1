@@ -1,0 +1,68 @@
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+
+@Composable
+fun PasadizoAgregar(navController: NavController ) {
+
+
+    // Colores personalizados
+    val naranjaClaro = Color(0xFFFFA726) // naranja claro
+    val azulCielo = Color(0xFF81D4FA)    // azul cielo
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = azulCielo
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Agregación de Consumibles",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
+            )
+
+            Button(
+                onClick = { navController.navigate("ScreenB") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Plato", color = Color.White)
+            }
+
+            Button(
+                onClick = { navController.navigate("ScreenC") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Bebida", color = Color.White)
+            }
+
+            Button(
+                onClick = { navController.navigate("ScreenD") }, //aca
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Plato Especial", color = Color.White)
+            }
+
+            Button(
+                onClick = { navController.navigate("ScreenA") },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver", color = Color.White)
+            }
+        }
+    }
+}

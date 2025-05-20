@@ -1,0 +1,48 @@
+import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+
+class PedidosViewModel : ViewModel() {
+
+    // Lista observable para Jetpack Compose (opcional pero recomendable)
+    val pedidos: SnapshotStateList<RegistroPedido> = mutableStateListOf()
+
+	val idMesero by remember { mutableStateOf<Int?>(null) }
+	
+	val idConsumiblePlato by remember { mutableStateOf<Long?>(null) }
+	val idConsumibleBebida by remember { mutableStateOf<Long?>(null) }
+	val idConsumibleEspecial by remember { mutableStateOf<Long?>(null) }
+	val idConsumible by remember { mutableStateOf<Long?>(null) }
+
+	val idOrden by remember { mutableStateOf<Long?>(null) }
+	
+	val cantidadPlatos by remember { mutableStateOf<Int?>(null) }
+	val cantidadBebidas by remember { mutableStateOf<Int?>(null) }
+	val cantidadEspeciales by remember { mutableStateOf<Int?>(null) }
+	
+    init {
+        // Inicializar con 50 pedidos vacíos
+        repeat(50) {
+            pedidos.add(
+                RegistroPedido(
+                    "",
+                    mutableListOf<Dato>(),
+                    mutableListOf<Dato>(),
+                    mutableListOf<Dato>()
+                )
+            )
+        }
+    }
+
+    // Ejemplo: actualizar un pedido en cierta posición
+    fun actualizarPedido(index: Int, nuevoPedido: RegistroPedido) {
+        if (index in pedidos.indices) {
+            pedidos[index] = nuevoPedido
+        }
+    }
+
+    // Obtener un pedido específico
+    fun obtenerPedido(index: Int): RegistroPedido? {
+        return pedidos.getOrNull(index)
+    }
+}

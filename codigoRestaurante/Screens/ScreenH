@@ -1,0 +1,142 @@
+@Composable
+fun VerOrdenes(
+	
+	navController: NavController,
+    ordenViewModel OrdenesViewModel
+) {
+    val naranjaClaro = Color(0xFFFFA726)
+    val azulCielo = Color(0xFF81D4FA)
+
+    val context = LocalContext.current
+
+    // Variables de estado
+    var fechaSeleccionada by remember { mutableStateOf("") }
+    var idMesero by remember { mutableStateOf("") }
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _: DatePicker, y: Int, m: Int, d: Int ->
+            // Formato compatible con PostgreSQL: yyyy-MM-dd
+            fechaSeleccionada = String.format("%04d-%02d-%02d", y, m + 1, d)
+        },
+        year, month, day
+    )
+
+    // ViewModel para manejar las órdenes
+    
+    val ordenes by ordenViewModel.ordenes.observeAsState(emptyList())
+    val isLoading by ordenViewModel.loading.observeAsState()
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = azulCielo
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Título
+            Text(
+                text = "Buscar Órdenes",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
+            )
+
+            // Campo de texto para ingresar el ID del mesero
+            OutlinedTextField(
+                value = idMesero,
+                onValueChange = { idMesero = it },
+                label = { Text("ID de Mesero") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Botón para buscar órdenes por mesero
+            Button(
+                onClick = { 
+                    if (idMesero.isNotEmpty()) {
+                        ordenViewModel.getOrdenesPorMesero(idMesero.toLong())
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro)
+            ) {
+                Text("Por mesero", color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botón para abrir el selector de fecha
+            Button(
+                onClick = { datePickerDialog.show() },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro)
+            ) {
+                Text("Abrir Selector de Fecha", color = Color.White)
+            }
+
+            // Mostrar la fecha seleccionada
+            if (fechaSeleccionada.isNotEmpty()) {
+                Text(
+                    text = "Fecha seleccionada: $fechaSeleccionada",
+                    color = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botón para filtrar las órdenes por mesero y fecha
+            Button(
+                onClick = { 
+                    if (idMesero.isNotEmpty() && fechaSeleccionada.isNotEmpty()) {
+                        ordenViewModel.getOrdenesPorMeseroYFecha(idMesero.toLong(), fechaSeleccionada)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro)
+            ) {
+                Text("Por fecha", color = Color.White)
+            }
+
+			Button(
+                onClick = { navController.popBackStack() },
+                colors = ButtonDefaults.buttonColors(containerColor = naranjaClaro),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Volver", color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Mostrar la lista de órdenes
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(ordenes) { orden ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White)
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                        ) {
+                            Text("${orden.id}", Modifier.weight(1f))
+                            Text(orden.fecha ?: "Sin fecha", Modifier.weight(1f))
+                            Text("${orden.numeroMesa ?: "N/A"}", Modifier.weight(1f))
+                            Text("${orden.idPlatoEspecial ?: "N/A"}", Modifier.weight(1f))
+                            Text("${orden.idPlatos ?: "N/A"}", Modifier.weight(1f))
+                            Text("${orden.idMesero ?: "N/A"}", Modifier.weight(1f))
+                            Text("${orden.idBebida ?: "N/A"}", Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

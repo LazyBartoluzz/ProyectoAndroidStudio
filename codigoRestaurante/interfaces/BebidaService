@@ -1,0 +1,37 @@
+
+
+interface BebidaService {
+
+    @GET("/bebidas")
+    suspend fun getAllBebidas(): List<Bebida>
+
+    @GET("/bebidas/{id}")
+    suspend fun getBebidaById(@Path("id") id: Long): Response<Bebida>
+
+    @POST("/bebidas")
+    suspend fun createBebida(@Body bebida: Bebida): Response<Bebida>
+
+    @PUT("/bebidas/{id}")
+    suspend fun updateBebida(
+        @Path("id") id: Long,
+        @Body bebida: Bebida
+    ): Response<Bebida>
+
+    @DELETE("/bebidas/{id}")
+    suspend fun deleteBebida(@Path("id") id: Long): Response<Unit>
+
+    @GET("/bebidas/{id}/stock-minimo")
+    suspend fun getStockMinimo(@Path("id") id: Long): Response<Int>
+
+    @GET("/bebidas/{id}/stock-actual")
+    suspend fun getStockActual(@Path("id") id: Long): Response<Int>
+
+    @PUT("/bebidas/asignar-stock-maximo")
+    suspend fun asignarStockMaximoATodas(): Response<Unit>
+
+    @PUT("/bebidas/{id}/stock-actual")
+    suspend fun actualizarStockActual(
+        @Path("id") id: Long,
+        @Query("nuevoStock") nuevoStock: Int
+    ): Response<Unit>
+}

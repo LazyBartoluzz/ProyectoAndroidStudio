@@ -1,0 +1,77 @@
+
+import androidx.activity.compose.setContent
+import androidx.activity.ComponentActivity
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
+
+@Composable
+fun Main( pedidos : PedidosViewModel,bebidas:BebidasViewModel,meseros : MeserosViewModel,ordenes : OrdenesViewModel,especiales: PlatosEspecialesViewModel,platos :PlatosViewModel ) {
+    // Crear un NavController para la navegación
+    val navController = rememberNavController()
+
+    // Definir el NavHost con las rutas
+    NavHost(
+        navController = navController,
+        startDestination = "ScreenA" // Pantalla inicial
+    ) {
+        composable("ScreenA") {
+            Principal(navController)
+        }
+        
+        composable("ScreenA1") {
+            PasadizoAgregar(navController)
+        }
+
+        composable("ScreenB") {
+            AgregarPlato(navController, platos)
+        }
+
+        composable("ScreenC") {
+            AgregarBebida(navController, bebidas)
+        }
+        
+        composable("ScreenD") {
+            AgregarPlatoEspecial(navController, especiales)
+        }
+        
+        composable("ScreenA2") {
+            PasadizoModificar(navController,pedidos,platos,bebidas,especiales)
+        }
+        
+        composable("ScreenE") {
+            ModificarPlato(navController,pedidos, platos)
+        }
+        
+        composable("ScreenF") {
+            ModificarBebida(navController,pedidos, bebidas)
+        }
+        
+        composable("ScreenG") {
+            ModificarPlatoEspecial(navController, pedidos, especiales)
+        }
+        
+        composable("ScreenH") {
+            VerOrdenes(navController, ordenes)//ya
+        }
+        
+        composable("ScreenI") {
+            GenerarFactura(navController, pedidos, bebidas, meseros, ordenes, especiales, platos)
+        }
+        
+        composable("ScreenJ") {
+            VerBebidas(navController, bebidas)
+        }
+        
+        composable("ScreenK") {
+            RegistrarOrden(navController, pedidos, bebidas, meseros, ordenes, especiales, platos)
+        }
+        
+        composable("ScreenL") {
+            ModificarOrden(navController, pedidos, ordenes)
+        }
+        
+    }
+}

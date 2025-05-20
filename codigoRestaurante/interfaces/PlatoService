@@ -1,0 +1,21 @@
+
+interface PlatoService {
+
+    @GET("/platos")
+    suspend fun getAllPlatos(): List<Plato>
+
+    @GET("/platos/{id}")
+    suspend fun getPlatoById(@Path("id") id: Long): Response<Plato>
+
+    @POST("/platos")
+    suspend fun createPlato(@Body plato: Plato): Response<Plato>
+
+    @PUT("/platos/{id}")
+    suspend fun updatePlato(
+        @Path("id") id: Long,
+        @Body plato: Plato
+    ): Response<Plato>
+
+    @DELETE("/platos/{id}")
+    suspend fun deletePlato(@Path("id") id: Long): Response<Unit>
+}
