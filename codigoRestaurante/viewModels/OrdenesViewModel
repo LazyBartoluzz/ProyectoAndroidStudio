@@ -48,7 +48,7 @@ class OrdenesViewModel : ViewModel() {
     }
 
     // Fetch orders by mesero ID
-    fun getOrdenesPorMesero Long) {
+    fun getOrdenesPorMesero( idMesero:Long) {
         viewModelScope.launch {
             _loading.value = true
             try {

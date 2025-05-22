@@ -60,7 +60,7 @@ class BebidasViewModel : ViewModel() {
         // Llamada a la API dentro de un bloque de corrutinas
         viewModelScope.launch {
             try {
-                val response = bebidaApi.createBebida(bebida)
+                val response = RetrofitInstance.bebidaService.createBebida(bebida)
                 _bebidaCreada.value = response
             } catch (e: Exception) {
                 // En caso de error, manejar la excepción aquí

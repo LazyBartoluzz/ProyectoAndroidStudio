@@ -82,18 +82,21 @@ fun PasadizoModificar( navController: NavController, pedidosView : PedidosViewMo
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Button(onClick = { navController.navigate("ScreenE")
+                    Button(onClick = { 
                     	pedidosView.idConsumible = number1
+                    	navController.navigate("ScreenE")
                      }) {
                         Text("Cambiar plato")
                     }
-                    Button(onClick = { navController.navigate("ScreenF")
+                    Button(onClick = { 
                     	pedidosView.idConsumible = number2
+                    	navController.navigate("ScreenF")
                      }) {
                         Text("Cambiar bebida")
                     }
-                    Button(onClick = {navController.navigate("ScreenG")
+                    Button(onClick = {
                     	pedidosView.idConsumible = number3
+                    	navController.navigate("ScreenG")
                      }) {
                         Text("Cambiar plato especial")
                     }

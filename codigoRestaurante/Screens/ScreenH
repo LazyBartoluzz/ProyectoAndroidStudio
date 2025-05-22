@@ -1,8 +1,62 @@
+// Jetpack Compose
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+
+// Navigation
+import androidx.navigation.NavController
+
+// ViewModel + LiveData + state observe
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.observe
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.collectAsState
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+// Android SDK (para el DatePickerDialog y Calendar)
+import android.app.DatePickerDialog
+import android.widget.DatePicker
+import java.util.Calendar
+
+
 @Composable
 fun VerOrdenes(
 	
 	navController: NavController,
-    ordenViewModel OrdenesViewModel
+    ordenViewModel: OrdenesViewModel
 ) {
     val naranjaClaro = Color(0xFFFFA726)
     val azulCielo = Color(0xFF81D4FA)

@@ -1,3 +1,9 @@
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Path // si usas parámetros
+
+
 object RetrofitInstance {
     private const val BASE_URL = "http://localhost:3000/"
 
